@@ -3,6 +3,9 @@ import './globals.css';
 export const metadata = {
   title: 'Iconic Faculty | Free Education for Intermediate Students',
   description: 'I am a retired professor providing free education resources to protect intermediate students from the college mafia. Join Iconic Faculty today.',
+  icons: {
+    icon: '/iconicfaculty.ico',
+  },
 };
 
 export default function RootLayout({ children }) {

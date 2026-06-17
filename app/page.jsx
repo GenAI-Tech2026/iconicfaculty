@@ -89,7 +89,7 @@ export default function Home() {
           <a href="#about" className="nav-link">ABOUT</a>
           <a href="#featured-videos" className="nav-link">TALKS</a>
           <a href="#resources" className="nav-link">RESOURCES</a>
-          <a href="https://youtube.com" target="_blank" rel="noreferrer" className="nav-link">SUBSCRIBE</a>
+          <a href="https://www.youtube.com/@TheIconicFaculty" target="_blank" rel="noreferrer" className="nav-link">SUBSCRIBE</a>
         </div>
       </nav>
 
@@ -97,16 +97,7 @@ export default function Home() {
         <section className="hero-new">
           <ParticleText text={"ICONIC\nFACULTY"} />
           
-          <div className="sidebar left-sidebar">
-            <div className="sidebar-icon">📐</div>
-            <div className="sidebar-icon">💡</div>
-            <div className="sidebar-icon">🔬</div>
-            <div className="sidebar-icon">📚</div>
-            <div className="sidebar-icon">🎓</div>
-            <div className="sidebar-icon">✏️</div>
-            <div className="sidebar-icon">🚀</div>
-          </div>
-          
+
           <div className="hero-content-new">
             <h2 className="hero-headline reveal-up" style={{ '--delay': '0.4s' }}>
               Education is a right, not a business.
@@ -116,16 +107,6 @@ export default function Home() {
                 Join the Revolution
               </a>
             </div>
-          </div>
-          
-          <div className="sidebar right-sidebar">
-            <div className="sidebar-icon">📐</div>
-            <div className="sidebar-icon">💡</div>
-            <div className="sidebar-icon">🔬</div>
-            <div className="sidebar-icon">📚</div>
-            <div className="sidebar-icon">🎓</div>
-            <div className="sidebar-icon">✏️</div>
-            <div className="sidebar-icon">🚀</div>
           </div>
         </section>
 
@@ -196,12 +177,21 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <section id="resources" className="about-section" style={{ textAlign: 'center', padding: '6rem 5%' }}>
+          <div className="container reveal-up">
+            <h2 className="section-title">Resources</h2>
+            <p style={{ fontSize: '1.2rem', color: 'rgba(255, 255, 255, 0.7)', marginTop: '1rem' }}>
+              High-quality, free educational materials are coming soon. Stay tuned!
+            </p>
+          </div>
+        </section>
       </main>
 
       <footer>
         <div className="footer-content">
           <div className="logo">
-            <span className="logo-icon">🎓</span> ICONIC FACULTY
+            ICONIC FACULTY
           </div>
           <p>Empowering intermediate students with free education.</p>
           <div className="social-links">
