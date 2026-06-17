@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import ParticleText from '../components/ParticleText';
+import PixelIndiaMap from '../components/PixelIndiaMap';
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
@@ -188,18 +189,59 @@ export default function Home() {
         </section>
       </main>
 
-      <footer>
-        <div className="footer-content">
-          <div className="logo">
-            ICONIC FACULTY
+      <footer className="bento-footer">
+        <div className="bento-grid">
+          {/* Main Block */}
+          <div className="bento-card bento-main">
+            <div className="bento-label">TEACHING</div>
+            <div className="bento-main-content">
+              <h2>Let's make<br/>education <span className="highlight-text">free.</span></h2>
+              <a href="mailto:theiconicfaculty@gmail.com" className="bento-email">theiconicfaculty@gmail.com</a>
+            </div>
+            <div className="bento-glow"></div>
           </div>
-          <p>Empowering intermediate students with free education.</p>
-          <div className="social-links">
-            <a href="https://youtube.com" target="_blank" rel="noreferrer" className="social-link">YouTube</a>
+          
+          {/* Location Block */}
+          <div className="bento-card bento-location">
+            <div className="bento-label">CURRENTLY</div>
+            <p className="location-text">based out of <span className="highlight-text">Hyderabad</span></p>
+            <div className="map-container">
+              <PixelIndiaMap />
+            </div>
+          </div>
+
+          {/* Right Column Stack */}
+          <div className="bento-col">
+            <div className="bento-card bento-book">
+              <div className="bento-label">LEARN</div>
+              <a href="https://www.youtube.com/@TheIconicFaculty" target="_blank" rel="noreferrer" className="bento-link-large">
+                Watch on YouTube &rarr;
+              </a>
+            </div>
+            <div className="bento-card bento-pages">
+              <div className="bento-label">PAGES</div>
+              <ul className="bento-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#featured-videos">Talks</a></li>
+                <li><a href="#resources">Resources</a></li>
+              </ul>
+            </div>
           </div>
         </div>
-        <div className="footer-bottom">
-          <p>&copy; 2026 Iconic Faculty. All rights reserved.</p>
+
+        <div className="bento-footer-bottom">
+          <div className="bento-socials">
+            <span className="bento-social-label">FIND ME</span>
+            <a href="https://www.instagram.com/the_iconic_faculty/" target="_blank" rel="noreferrer">INSTAGRAM</a>
+            <span className="separator">/</span>
+            <a href="https://www.youtube.com/@TheIconicFaculty" target="_blank" rel="noreferrer">YOUTUBE</a>
+            <span className="separator">/</span>
+            <a href="https://wa.me/9182582848" target="_blank" rel="noreferrer">WHATSAPP</a>
+          </div>
+          <div className="bento-copyright">
+            &copy; 2026 ICONIC FACULTY. ALL RIGHTS RESERVED.
+          </div>
         </div>
       </footer>
     </>
