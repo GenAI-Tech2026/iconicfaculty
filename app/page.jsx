@@ -196,7 +196,7 @@ export default function Home() {
             <div className="bento-label">TEACHING</div>
             <div className="bento-main-content">
               <h2>Let's make<br/>education <span className="highlight-text">free.</span></h2>
-              <a href="mailto:theiconicfaculty@gmail.com" className="bento-email">theiconicfaculty@gmail.com</a>
+              <a href="mailto:contact@iconicfaculty.com" className="bento-email">contact@iconicfaculty.com</a>
             </div>
             <div className="bento-glow"></div>
           </div>
@@ -205,6 +205,9 @@ export default function Home() {
           <div className="bento-card bento-location">
             <div className="bento-label">CURRENTLY</div>
             <p className="location-text">based out of <span className="highlight-text">Hyderabad</span></p>
+            <p className="location-address">
+              Plot No. 70, Diamond Hills, Block 1, Diamond Heights Road, Gopanpally, Hyderabad, Telangana - 500046
+            </p>
             <div className="map-container">
               <PixelIndiaMap />
             </div>
@@ -225,6 +228,7 @@ export default function Home() {
                 <li><a href="#about">About</a></li>
                 <li><a href="#featured-videos">Talks</a></li>
                 <li><a href="#resources">Resources</a></li>
+                <li><a href="/privacy-policy">Privacy Policy</a></li>
               </ul>
             </div>
           </div>
@@ -238,9 +242,11 @@ export default function Home() {
             <a href="https://www.youtube.com/@TheIconicFaculty" target="_blank" rel="noreferrer">YOUTUBE</a>
             <span className="separator">/</span>
             <a href="https://wa.me/9182582848" target="_blank" rel="noreferrer">WHATSAPP</a>
+            <span className="separator">/</span>
+            <a href="/privacy-policy">PRIVACY POLICY</a>
           </div>
           <div className="bento-copyright">
-            &copy; 2026 ICONIC FACULTY. ALL RIGHTS RESERVED.
+            &copy; 2026 ICONIC FACULTY &bull; A PRODUCT OF PARIKSHA TV. ALL RIGHTS RESERVED.
           </div>
         </div>
       </footer>
