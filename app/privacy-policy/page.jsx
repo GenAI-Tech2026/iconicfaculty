@@ -2,7 +2,7 @@ import PixelIndiaMap from '../../components/PixelIndiaMap';
 
 export const metadata = {
   title: 'Privacy Policy | Iconic Faculty - A Product of Pariksha TV',
-  description: 'Official Privacy Policy for Iconic Faculty, a product of Pariksha TV. Details regarding data privacy, registered address, and contact information.',
+  description: 'Official Privacy Policy for Iconic Faculty, a product of Pariksha TV. Details regarding data privacy, entity governance, and contact information.',
 };
 
 export default function PrivacyPolicy() {
@@ -50,9 +50,9 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="privacy-section">
-            <h2>2. Registered Enterprise &amp; Official Address</h2>
+            <h2>2. Entity Information &amp; Contact</h2>
             <p>
-              In accordance with applicable statutory guidelines and the Information Technology Act, our official enterprise and registered address details are as follows:
+              In accordance with applicable statutory guidelines and the Information Technology Act, the relevant organizational and contact details are as follows:
             </p>
             <div className="privacy-contact-card">
               <div className="privacy-contact-grid">
@@ -65,12 +65,9 @@ export default function PrivacyPolicy() {
                   <div className="contact-item-value">UDYAM-TS-09-0276448</div>
                 </div>
                 <div>
-                  <div className="contact-item-label">Official Registered Address</div>
+                  <div className="contact-item-label">Location</div>
                   <div className="contact-item-value">
-                    Plot No. 70, Diamond Hills, Block 1,<br />
-                    Diamond Heights Road, Gopanpally,<br />
-                    Hyderabad, Ranga Reddy District,<br />
-                    Telangana &ndash; 500046, India.
+                    Hyderabad, Telangana, India
                   </div>
                 </div>
                 <div>
@@ -162,7 +159,7 @@ export default function PrivacyPolicy() {
             <div className="privacy-contact-card">
               <p style={{ margin: 0, color: '#fff', fontWeight: 600 }}>Pariksha TV &ndash; Iconic Faculty</p>
               <p style={{ margin: '0.4rem 0 0 0', color: 'rgba(255, 255, 255, 0.75)', fontSize: '0.9rem' }}>
-                Plot No. 70, Diamond Hills, Block 1, Diamond Heights Road, Gopanpally, Hyderabad, Ranga Reddy District, Telangana &ndash; 500046, India.
+                Hyderabad, Telangana, India
               </p>
               <p style={{ margin: '0.4rem 0 0 0', fontSize: '0.9rem' }}>
                 <strong>Email:</strong> <a href="mailto:contact@iconicfaculty.com" style={{ color: 'var(--accent)' }}>contact@iconicfaculty.com</a>
@@ -188,9 +185,6 @@ export default function PrivacyPolicy() {
           <div className="bento-card bento-location">
             <div className="bento-label">CURRENTLY</div>
             <p className="location-text">based out of <span className="highlight-text">Hyderabad</span></p>
-            <p className="location-address">
-              Plot No. 70, Diamond Hills, Block 1, Diamond Heights Road, Gopanpally, Hyderabad, Telangana - 500046
-            </p>
             <div className="map-container">
               <PixelIndiaMap />
             </div>
@@ -229,7 +223,7 @@ export default function PrivacyPolicy() {
             <a href="/privacy-policy">PRIVACY POLICY</a>
           </div>
           <div className="bento-copyright">
-            &copy; 2026 ICONIC FACULTY &bull; A PRODUCT OF PARIKSHA TV. ALL RIGHTS RESERVED.
+            &copy; 2026 ICONIC FACULTY. ALL RIGHTS RESERVED.
           </div>
         </div>
       </footer>

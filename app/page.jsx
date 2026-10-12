@@ -205,9 +205,6 @@ export default function Home() {
           <div className="bento-card bento-location">
             <div className="bento-label">CURRENTLY</div>
             <p className="location-text">based out of <span className="highlight-text">Hyderabad</span></p>
-            <p className="location-address">
-              Plot No. 70, Diamond Hills, Block 1, Diamond Heights Road, Gopanpally, Hyderabad, Telangana - 500046
-            </p>
             <div className="map-container">
               <PixelIndiaMap />
             </div>
@@ -246,7 +243,7 @@ export default function Home() {
             <a href="/privacy-policy">PRIVACY POLICY</a>
           </div>
           <div className="bento-copyright">
-            &copy; 2026 ICONIC FACULTY &bull; A PRODUCT OF PARIKSHA TV. ALL RIGHTS RESERVED.
+            &copy; 2026 ICONIC FACULTY. ALL RIGHTS RESERVED.
           </div>
         </div>
       </footer>
