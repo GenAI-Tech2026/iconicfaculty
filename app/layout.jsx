@@ -1,4 +1,19 @@
+import { Outfit, Playfair_Display } from 'next/font/google';
 import './globals.css';
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  weight: ['300', '400', '600', '800', '900'],
+  variable: '--font-outfit',
+  display: 'swap',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-playfair',
+  display: 'swap',
+});
 
 export const metadata = {
   title: 'Iconic Faculty | Free Education for Intermediate Students',
@@ -10,12 +25,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="en" className={`${outfit.variable} ${playfair.variable}`}>
       <body>
         <div className="background-overlay"></div>
         <div className="animated-bg"></div>

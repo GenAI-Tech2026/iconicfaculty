@@ -1,25 +1,13 @@
 "use client";
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import ParticleText from '../components/ParticleText';
 import PixelIndiaMap from '../components/PixelIndiaMap';
 
 export default function Home() {
-  const [scrolled, setScrolled] = useState(false);
-  const heroRef = useRef(null);
-  const card1Ref = useRef(null);
-  const card2Ref = useRef(null);
+  const [activeNav, setActiveNav] = useState('home');
 
   useEffect(() => {
-    // Navbar scroll effect
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-
     // Intersection Observer for scroll animations
     const observerOptions = {
       threshold: 0.1,
@@ -30,72 +18,67 @@ export default function Home() {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('active');
-          
-          // Handle delayed animations using inline CSS variables
+
           const delay = entry.target.style.getPropertyValue('--delay');
           if (delay) {
             entry.target.style.transitionDelay = delay;
           }
-          
+
           observer.unobserve(entry.target);
         }
       });
     }, observerOptions);
 
-    // Observe all elements with reveal classes
     document.querySelectorAll('.reveal-up, .reveal-right').forEach(el => {
       observer.observe(el);
     });
 
+    // Update active navbar pill based on scroll position
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (entry.target.id === 'about') setActiveNav('about');
+            else if (entry.target.id === 'featured-videos') setActiveNav('talks');
+            else if (entry.target.id === 'resources') setActiveNav('resources');
+          }
+        });
+      },
+      { threshold: 0.35 },
+    );
+
+    ['about', 'featured-videos', 'resources'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) sectionObserver.observe(el);
+    });
+
+    const onScrollTop = () => {
+      if (window.scrollY < 260) setActiveNav('home');
+    };
+    window.addEventListener('scroll', onScrollTop, { passive: true });
+
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       observer.disconnect();
+      sectionObserver.disconnect();
+      window.removeEventListener('scroll', onScrollTop);
     };
   }, []);
 
-  // Parallax effect for floating cards
-  const handleMouseMove = (e) => {
-    const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
-    const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
-    
-    if (card1Ref.current) {
-      card1Ref.current.style.transform = `translate(${xAxis * 1}px, ${yAxis * 1}px)`;
-    }
-    if (card2Ref.current) {
-      card2Ref.current.style.transform = `translate(${xAxis * -1}px, ${yAxis * -1}px)`;
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (card1Ref.current) {
-      card1Ref.current.style.transform = `translate(0px, 0px)`;
-      card1Ref.current.style.transition = 'transform 0.5s ease';
-    }
-    if (card2Ref.current) {
-      card2Ref.current.style.transform = `translate(0px, 0px)`;
-      card2Ref.current.style.transition = 'transform 0.5s ease';
-    }
-  };
-
-  const handleMouseEnter = () => {
-    if (card1Ref.current) card1Ref.current.style.transition = 'none';
-    if (card2Ref.current) card2Ref.current.style.transition = 'none';
-  };
-
   return (
     <>
-      <nav className="pill-navbar reveal-nav">
+      <nav className="pill-navbar">
         <div className="nav-links">
-          <a href="#" className="nav-link active">HOME</a>
-          <a href="#about" className="nav-link">ABOUT</a>
-          <a href="#featured-videos" className="nav-link">TALKS</a>
-          <a href="#resources" className="nav-link">RESOURCES</a>
+          <a href="#" onClick={() => setActiveNav('home')} className={`nav-link ${activeNav === 'home' ? 'active' : ''}`}>HOME</a>
+          <a href="#about" onClick={() => setActiveNav('about')} className={`nav-link ${activeNav === 'about' ? 'active' : ''}`}>ABOUT</a>
+          <a href="#featured-videos" onClick={() => setActiveNav('talks')} className={`nav-link ${activeNav === 'talks' ? 'active' : ''}`}>TALKS</a>
+          <Link href="/links" onClick={() => setActiveNav('resources')} className={`nav-link ${activeNav === 'resources' ? 'active' : ''}`}>RESOURCES</Link>
           <a href="https://www.youtube.com/@TheIconicFaculty" target="_blank" rel="noreferrer" className="nav-link">SUBSCRIBE</a>
         </div>
       </nav>
 
       <main>
         <section className="hero-new">
+          <h1 className="sr-only">Iconic Faculty — Free Education for Intermediate Students</h1>
           <ParticleText text={"ICONIC\nFACULTY"} />
           
 
@@ -181,10 +164,15 @@ export default function Home() {
 
         <section id="resources" className="about-section" style={{ textAlign: 'center', padding: '6rem 5%' }}>
           <div className="container reveal-up">
-            <h2 className="section-title">Resources</h2>
-            <p style={{ fontSize: '1.2rem', color: 'rgba(255, 255, 255, 0.7)', marginTop: '1rem' }}>
-              High-quality, free educational materials are coming soon. Stay tuned!
+            <h2 className="section-title">Free Study <span className="highlight">Resources</span></h2>
+            <p style={{ fontSize: '1.15rem', color: 'rgba(255, 255, 255, 0.75)', marginTop: '1rem', maxWidth: '580px', marginInline: 'auto' }}>
+              Access all our official channels, lecture playlists, and free downloadable PDF study materials in one place.
             </p>
+            <div style={{ marginTop: '2rem' }}>
+              <Link href="/links" className="btn btn-primary">
+                Open Links &amp; Free PDFs &rarr;
+              </Link>
+            </div>
           </div>
         </section>
       </main>
@@ -221,11 +209,11 @@ export default function Home() {
             <div className="bento-card bento-pages">
               <div className="bento-label">PAGES</div>
               <ul className="bento-links">
-                <li><a href="#">Home</a></li>
+                <li><Link href="/">Home</Link></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#featured-videos">Talks</a></li>
-                <li><a href="#resources">Resources</a></li>
-                <li><a href="/privacy-policy">Privacy Policy</a></li>
+                <li><Link href="/links">Resources &amp; PDFs</Link></li>
+                <li><Link href="/privacy-policy">Privacy Policy</Link></li>
               </ul>
             </div>
           </div>
@@ -234,13 +222,13 @@ export default function Home() {
         <div className="bento-footer-bottom">
           <div className="bento-socials">
             <span className="bento-social-label">FIND ME</span>
-            <a href="https://www.instagram.com/the_iconic_faculty/" target="_blank" rel="noreferrer">INSTAGRAM</a>
+            <a href="https://www.instagram.com/the_iconic_faculty" target="_blank" rel="noreferrer">INSTAGRAM</a>
             <span className="separator">/</span>
             <a href="https://www.youtube.com/@TheIconicFaculty" target="_blank" rel="noreferrer">YOUTUBE</a>
             <span className="separator">/</span>
-            <a href="https://wa.me/9182582848" target="_blank" rel="noreferrer">WHATSAPP</a>
+            <a href="https://wa.me/917780218068" target="_blank" rel="noreferrer">WHATSAPP</a>
             <span className="separator">/</span>
-            <a href="/privacy-policy">PRIVACY POLICY</a>
+            <Link href="/privacy-policy">PRIVACY POLICY</Link>
           </div>
           <div className="bento-copyright">
             &copy; 2026 ICONIC FACULTY. ALL RIGHTS RESERVED.

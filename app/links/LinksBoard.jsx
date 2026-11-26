@@ -115,12 +115,12 @@ export function LinksBoard({ links }) {
       <div className="if-lp__wrap">
         {/* Brand Header */}
         <header className="if-lp__header">
-          <div className="if-lp__avatar">
+          <Link href="/" className="if-lp__avatar" aria-label="Back to Iconic Faculty Home" title="Go to Iconic Faculty Home">
             <span>IF</span>
-          </div>
+          </Link>
           <span className="if-lp__eyebrow">Official Links</span>
           <h1 className="if-lp__title">
-            Iconic <span className="highlight">Faculty</span>
+            Iconic <span className="if-lp__accent">Faculty</span>
           </h1>
           <p className="if-lp__lead">
             Free, honest education resources for Intermediate students. Lectures, notes &amp; direct mentorship channels.
@@ -149,9 +149,11 @@ export function LinksBoard({ links }) {
           </div>
 
           {categories.length > 1 && (
-            <div className="if-lp__chips" role="tablist">
+            <div className="if-lp__chips" role="tablist" aria-label="Filter by category">
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeCat === "All"}
                 className={`if-lp__chip ${activeCat === "All" ? "is-on" : ""}`}
                 onClick={() => setActiveCat("All")}
               >
@@ -161,6 +163,8 @@ export function LinksBoard({ links }) {
                 <button
                   key={c}
                   type="button"
+                  role="tab"
+                  aria-selected={activeCat === c}
                   className={`if-lp__chip ${activeCat === c ? "is-on" : ""}`}
                   onClick={() => setActiveCat(c)}
                 >
@@ -193,8 +197,6 @@ export function LinksBoard({ links }) {
 
         <footer className="if-lp__footer">
           <Link href="/">← Back to Iconic Faculty</Link>
-          <span>•</span>
-          <Link href="/admin">Manage Links</Link>
         </footer>
       </div>
 
@@ -228,6 +230,15 @@ export function LinksBoard({ links }) {
           font-size: 26px;
           font-weight: 700;
           color: #fff;
+          text-decoration: none;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .if-lp__avatar:hover {
+          transform: scale(1.06);
+          box-shadow: 0 12px 34px rgba(230, 57, 70, 0.5);
+        }
+        .if-lp__accent {
+          color: var(--accent);
         }
         .if-lp__eyebrow {
           display: inline-block;

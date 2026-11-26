@@ -63,9 +63,8 @@ alter table public.iconic_link_events enable row level security;
 
 -- Seed default Iconic Faculty links
 insert into public.iconic_social_links (title, url, slug, icon, description, category, sort_order) values
-  ('Watch Free Lectures on YouTube', 'https://www.youtube.com/@iconicfaculty', 'youtube-lectures', 'youtube', 'Complete Intermediate MPC & BiPC video lectures — 100% free', 'Social', 1),
-  ('Join Student Telegram Channel',   'https://t.me/iconicfaculty',               'telegram-notes',   'telegram','Free PDF notes, formula sheets & daily practice problems',   'Social', 2),
-  ('Chat on WhatsApp',                'https://wa.me/919000000000',               'whatsapp-help',    'whatsapp','Ask doubts or request subject-wise study materials',         'Social', 3),
-  ('Follow on Instagram',             'https://www.instagram.com/iconicfaculty',  'instagram',        'instagram','Short revision reels, exam tips & student updates',         'Social', 4),
-  ('Visit Iconic Faculty Home',       'https://iconicfaculty.in',                 'website',          'website', 'Our mission to protect intermediate students from college mafia', 'Resources', 5)
+  ('Watch Free Lectures on YouTube', 'https://www.youtube.com/@TheIconicFaculty', 'youtube-lectures', 'youtube', 'Complete Intermediate MPC & BiPC video lectures — 100% free', 'Social', 1),
+  ('Chat on WhatsApp',                'https://wa.me/917780218068',               'whatsapp-help',    'whatsapp','Ask doubts or request subject-wise study materials',         'Social', 2),
+  ('Follow on Instagram',             'https://www.instagram.com/the_iconic_faculty', 'instagram',    'instagram','Short revision reels, exam tips & student updates',         'Social', 3),
+  ('Visit Iconic Faculty Home',       'https://iconicfaculty.com',                'website',          'website', 'Our mission to protect intermediate students from college mafia', 'Resources', 4)
 on conflict (slug) do nothing;

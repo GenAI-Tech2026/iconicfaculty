@@ -6,18 +6,18 @@ import { getLinkBySlug } from "../../../lib/links-store";
 const LOCAL_PDF_DIR = path.join(process.cwd(), "data", "pdfs");
 
 export async function GET(_req, context) {
-  const { slug: rawSlug } = await context.params;
-  const slug = decodeURIComponent(rawSlug || "").replace(/\.pdf$/i, "");
-  if (!slug) return new NextResponse("Not found", { status: 404 });
-
-  const link = await getLinkBySlug(slug);
-  if (!link || link.icon !== "pdf") {
-    return new NextResponse("Not found", { status: 404 });
-  }
-
-  const downloadName = `${slug}.pdf`;
-
   try {
+    const { slug: rawSlug } = await context.params;
+    const slug = decodeURIComponent(rawSlug || "").replace(/\.pdf$/i, "");
+    if (!slug) return new NextResponse("Not found", { status: 404 });
+
+    const link = await getLinkBySlug(slug);
+    if (!link || link.icon !== "pdf") {
+      return new NextResponse("Not found", { status: 404 });
+    }
+
+    const downloadName = `${slug.replace(/[^a-zA-Z0-9_-]/g, "-")}.pdf`;
+
     if (link.url.startsWith("/api/pdfs/")) {
       const localName = path.basename(decodeURIComponent(link.url.replace("/api/pdfs/", "")));
       const data = await fs.readFile(path.join(LOCAL_PDF_DIR, localName));

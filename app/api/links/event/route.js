@@ -8,12 +8,15 @@ function deviceFromUA(ua = "") {
   return "desktop";
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function POST(req) {
   try {
     const body = await req.json();
     const type = body?.type === "click" ? "click" : "view";
-    const linkId = typeof body?.id === "string" ? body.id : null;
-    const source = typeof body?.source === "string" ? body.source : "Direct";
+    const rawId = typeof body?.id === "string" ? body.id.trim() : "";
+    const linkId = UUID_RE.test(rawId) ? rawId : null;
+    const source = typeof body?.source === "string" ? body.source.slice(0, 60) : "Direct";
     const device = deviceFromUA(req.headers.get("user-agent") || "");
 
     await recordEvent({ type, link_id: linkId, source, device });

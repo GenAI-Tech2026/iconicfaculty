@@ -2,7 +2,15 @@
 
 import React from "react";
 import Link from "next/link";
-import { createLink, updateLink, toggleLink, deleteLink, moveLink } from "./actions";
+import {
+  createLink,
+  updateLink,
+  toggleLink,
+  deleteLink,
+  restoreLink,
+  permanentDeleteLink,
+  moveLink,
+} from "./actions";
 import { PlatformIcon } from "../../components/PlatformIcon";
 import { detectPlatform, platformLabel, platformColor, categoryForIcon } from "../../lib/platform";
 
@@ -22,6 +30,10 @@ function LinkCard({ link, isFirst, isLast, clickCount }) {
   const [editing, setEditing] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
   const [editUrl, setEditUrl] = React.useState(link.url);
+
+  React.useEffect(() => {
+    setEditUrl(link.url);
+  }, [link.url]);
 
   const detected = detectPlatform(editUrl);
 
@@ -72,14 +84,14 @@ function LinkCard({ link, isFirst, isLast, clickCount }) {
             <form action={moveLink}>
               <input type="hidden" name="id" value={link.id} />
               <input type="hidden" name="direction" value="up" />
-              <button type="submit" className="if-st-btn" title="Move up">↑</button>
+              <button type="submit" className="if-st-btn" title="Move up" aria-label={`Move ${link.title} up`}>↑</button>
             </form>
           )}
           {!isLast && (
             <form action={moveLink}>
               <input type="hidden" name="id" value={link.id} />
               <input type="hidden" name="direction" value="down" />
-              <button type="submit" className="if-st-btn" title="Move down">↓</button>
+              <button type="submit" className="if-st-btn" title="Move down" aria-label={`Move ${link.title} down`}>↓</button>
             </form>
           )}
 
@@ -91,9 +103,21 @@ function LinkCard({ link, isFirst, isLast, clickCount }) {
             Edit
           </button>
 
-          <form action={deleteLink}>
+          <form
+            action={deleteLink}
+            onSubmit={(e) => {
+              if (!confirm(`Move "${link.title}" to Recycle Bin? (Kept for 30 days)`)) {
+                e.preventDefault();
+              }
+            }}
+          >
             <input type="hidden" name="id" value={link.id} />
-            <button type="submit" className="if-st-btn is-danger" title="Delete link">
+            <button
+              type="submit"
+              className="if-st-btn is-danger"
+              title="Move to Recycle Bin"
+              aria-label={`Move ${link.title} to Recycle Bin`}
+            >
               ✕
             </button>
           </form>
@@ -168,7 +192,7 @@ function LinkCard({ link, isFirst, isLast, clickCount }) {
   );
 }
 
-export function AdminStudio({ links, events, adminName }) {
+export function AdminStudio({ links, trashedLinks = [], events, adminName }) {
   const [view, setView] = React.useState("links");
   // Box 1: Normal Link form state
   const [newTitle, setNewTitle] = React.useState("");
@@ -176,6 +200,8 @@ export function AdminStudio({ links, events, adminName }) {
   const [newDesc, setNewDesc] = React.useState("");
   const [newSlug, setNewSlug] = React.useState("");
   const [newCat, setNewCat] = React.useState("");
+  const [linkAdding, setLinkAdding] = React.useState(false);
+  const [linkError, setLinkError] = React.useState(null);
   const linkFormRef = React.useRef(null);
 
   // Box 2: PDF Upload form state
@@ -250,6 +276,8 @@ export function AdminStudio({ links, events, adminName }) {
       <div className="if-adm__tabs" role="tablist">
         <button
           type="button"
+          role="tab"
+          aria-selected={view === "links"}
           className={`if-adm__tab ${view === "links" ? "is-on" : ""}`}
           onClick={() => setView("links")}
         >
@@ -257,10 +285,21 @@ export function AdminStudio({ links, events, adminName }) {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={view === "analytics"}
           className={`if-adm__tab ${view === "analytics" ? "is-on" : ""}`}
           onClick={() => setView("analytics")}
         >
           Analytics
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "trash"}
+          className={`if-adm__tab ${view === "trash" ? "is-on" : ""}`}
+          onClick={() => setView("trash")}
+        >
+          Recycle Bin ({trashedLinks.length})
         </button>
       </div>
 
@@ -271,14 +310,24 @@ export function AdminStudio({ links, events, adminName }) {
             {/* Box 1: Normal Links */}
             <form
               ref={linkFormRef}
-              action={async (fd) => {
-                await createLink(fd);
-                setNewTitle("");
-                setNewUrl("");
-                setNewDesc("");
-                setNewSlug("");
-                setNewCat("");
-                linkFormRef.current?.reset();
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (linkAdding) return;
+                setLinkError(null);
+                setLinkAdding(true);
+                try {
+                  await createLink(new FormData(e.currentTarget));
+                  setNewTitle("");
+                  setNewUrl("");
+                  setNewDesc("");
+                  setNewSlug("");
+                  setNewCat("");
+                  linkFormRef.current?.reset();
+                } catch (ex) {
+                  setLinkError(ex instanceof Error ? ex.message : "Failed to add link.");
+                } finally {
+                  setLinkAdding(false);
+                }
               }}
               className="if-st-add"
             >
@@ -293,6 +342,9 @@ export function AdminStudio({ links, events, adminName }) {
                   </span>
                 )}
               </div>
+              {linkError && (
+                <p style={{ color: "#ff9da5", fontSize: 13, margin: 0 }}>{linkError}</p>
+              )}
 
               <div className="if-st-grid2">
                 <label>
@@ -334,6 +386,7 @@ export function AdminStudio({ links, events, adminName }) {
                   <span>Custom Slug (optional)</span>
                   <input
                     name="slug"
+                    autoComplete="off"
                     placeholder="physics-lectures"
                     value={newSlug}
                     onChange={(e) => setNewSlug(e.target.value)}
@@ -352,8 +405,8 @@ export function AdminStudio({ links, events, adminName }) {
               </label>
 
               <div className="if-st-add__foot">
-                <button type="submit" className="if-st-primary">
-                  Add Link
+                <button type="submit" disabled={linkAdding} className="if-st-primary">
+                  {linkAdding ? "Adding…" : "Add Link"}
                 </button>
               </div>
             </form>
@@ -593,7 +646,7 @@ export function AdminStudio({ links, events, adminName }) {
             <p className="if-adm__preview-hint">Live Linktree Preview</p>
           </aside>
         </div>
-      ) : (
+      ) : view === "analytics" ? (
         <div className="if-an">
           <div className="if-an__kpis">
             <div className="if-an__kpi">
@@ -666,6 +719,64 @@ export function AdminStudio({ links, events, adminName }) {
             </div>
           </div>
         </div>
+      ) : (
+        <div className="if-an__panel">
+          <div className="if-st-add__head" style={{ marginBottom: 14 }}>
+            <h3>Recycle Bin (30-day retention)</h3>
+            <span style={{ fontSize: 12.5, color: "var(--text-muted)" }}>
+              Items are permanently deleted after 30 days.
+            </span>
+          </div>
+          {trashedLinks.length === 0 ? (
+            <p className="if-an__empty">Recycle Bin is empty.</p>
+          ) : (
+            <div className="if-st-list">
+              {trashedLinks.map((item) => {
+                const deletedMs = item.deleted_at ? new Date(item.deleted_at).getTime() : Date.now();
+                const daysLeft = Math.max(
+                  0,
+                  Math.ceil((deletedMs + 30 * 24 * 60 * 60 * 1000 - Date.now()) / (24 * 60 * 60 * 1000)),
+                );
+                return (
+                  <div key={item.id} className="if-st-card is-off">
+                    <div className="if-st-card__row">
+                      <span className="if-st-dot" style={{ background: platformColor(item.icon) }}>
+                        <PlatformIcon icon={item.icon} size={18} url={item.url} />
+                      </span>
+                      <div className="if-st-card__info">
+                        <div className="if-st-card__top">
+                          <span className="if-st-card__title">{item.title}</span>
+                          <span className="if-st-pill">{item.icon === "pdf" ? "PDF" : item.category || "Link"}</span>
+                          <span className="if-st-status is-hidden">Deletes in {daysLeft}d</span>
+                        </div>
+                        <div className="if-st-card__url">
+                          {item.icon === "pdf" ? `PDF File: ${pdfFileNameFromUrl(item.url)}` : item.url}
+                        </div>
+                      </div>
+                      <div className="if-st-actions">
+                        <form action={restoreLink}>
+                          <input type="hidden" name="id" value={item.id} />
+                          <button type="submit" className="if-st-btn">Restore</button>
+                        </form>
+                        <form
+                          action={permanentDeleteLink}
+                          onSubmit={(e) => {
+                            if (!confirm(`Permanently delete "${item.title}"? This cannot be undone.`)) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          <input type="hidden" name="id" value={item.id} />
+                          <button type="submit" className="if-st-btn is-danger">Delete Forever</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       )}
 
       <style>{`
@@ -703,6 +814,7 @@ export function AdminStudio({ links, events, adminName }) {
         }
         .if-adm__top-actions {
           display: flex;
+          flex-wrap: wrap;
           gap: 10px;
           align-items: center;
         }
