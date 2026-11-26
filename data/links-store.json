@@ -1,0 +1,57 @@
+{
+  "links": [
+    {
+      "id": "if-link-1",
+      "title": "Watch Free Lectures on YouTube",
+      "url": "https://www.youtube.com/@TheIconicFaculty",
+      "slug": "youtube-lectures",
+      "icon": "youtube",
+      "description": "Complete Intermediate MPC & BiPC video lectures — 100% free",
+      "category": "Social",
+      "sort_order": 1,
+      "is_active": true,
+      "deleted_at": null,
+      "created_at": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "if-link-2",
+      "title": "Chat on WhatsApp",
+      "url": "https://wa.me/917780218068",
+      "slug": "whatsapp-help",
+      "icon": "whatsapp",
+      "description": "Ask doubts or request subject-wise study materials",
+      "category": "Social",
+      "sort_order": 2,
+      "is_active": true,
+      "deleted_at": null,
+      "created_at": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "if-link-3",
+      "title": "Follow on Instagram",
+      "url": "https://www.instagram.com/the_iconic_faculty",
+      "slug": "instagram",
+      "icon": "instagram",
+      "description": "Short revision reels, exam tips & student updates",
+      "category": "Social",
+      "sort_order": 3,
+      "is_active": true,
+      "deleted_at": null,
+      "created_at": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "if-link-4",
+      "title": "Visit Iconic Faculty Home",
+      "url": "https://iconicfaculty.com",
+      "slug": "website",
+      "icon": "website",
+      "description": "Our mission to protect intermediate students from college mafia",
+      "category": "Resources",
+      "sort_order": 4,
+      "is_active": true,
+      "deleted_at": null,
+      "created_at": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "events": []
+}

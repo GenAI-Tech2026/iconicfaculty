@@ -8,12 +8,12 @@ export const metadata = {
 export default function PrivacyPolicy() {
   return (
     <>
-      <nav className="pill-navbar reveal-nav">
+      <nav className="pill-navbar">
         <div className="nav-links">
           <a href="/" className="nav-link">HOME</a>
           <a href="/#about" className="nav-link">ABOUT</a>
           <a href="/#featured-videos" className="nav-link">TALKS</a>
-          <a href="/#resources" className="nav-link">RESOURCES</a>
+          <a href="/links" className="nav-link">RESOURCES</a>
           <a href="https://www.youtube.com/@TheIconicFaculty" target="_blank" rel="noreferrer" className="nav-link">SUBSCRIBE</a>
         </div>
       </nav>
@@ -218,7 +218,7 @@ export default function PrivacyPolicy() {
             <span className="separator">/</span>
             <a href="https://www.youtube.com/@TheIconicFaculty" target="_blank" rel="noreferrer">YOUTUBE</a>
             <span className="separator">/</span>
-            <a href="https://wa.me/9182582848" target="_blank" rel="noreferrer">WHATSAPP</a>
+            <a href="https://wa.me/917780218068" target="_blank" rel="noreferrer">WHATSAPP</a>
             <span className="separator">/</span>
             <a href="/privacy-policy">PRIVACY POLICY</a>
           </div>
