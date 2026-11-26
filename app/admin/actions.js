@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getProfile, isLinkManager } from "../../lib/auth";
+import { uploadPdf } from "../../lib/pdf-storage";
 import {
   addLink,
   updateLinkById,
@@ -19,11 +20,25 @@ async function assertLinkManager() {
 
 export async function createLink(formData) {
   await assertLinkManager();
-  const title = String(formData.get("title") ?? "").trim();
-  const url = String(formData.get("url") ?? "").trim();
+  let title = String(formData.get("title") ?? "").trim();
+  let url = String(formData.get("url") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const slug = String(formData.get("slug") ?? "").trim();
   const category = String(formData.get("category") ?? "").trim();
+  const pdfFile = formData.get("pdfFile");
+
+  if (pdfFile && typeof pdfFile === "object" && pdfFile.size > 0) {
+    const uploadedUrl = await uploadPdf(pdfFile);
+    if (uploadedUrl) {
+      url = uploadedUrl;
+      if (!title) {
+        title = String(pdfFile.name || "PDF Document")
+          .replace(/\.pdf$/i, "")
+          .replace(/[-_]+/g, " ")
+          .trim();
+      }
+    }
+  }
 
   if (!title || !url) return;
   await addLink({ title, url, description, slug, category });
@@ -35,10 +50,16 @@ export async function updateLink(formData) {
   await assertLinkManager();
   const id = String(formData.get("id") ?? "");
   const title = String(formData.get("title") ?? "").trim();
-  const url = String(formData.get("url") ?? "").trim();
+  let url = String(formData.get("url") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const slug = String(formData.get("slug") ?? "").trim();
   const category = String(formData.get("category") ?? "").trim();
+  const pdfFile = formData.get("pdfFile");
+
+  if (pdfFile && typeof pdfFile === "object" && pdfFile.size > 0) {
+    const uploadedUrl = await uploadPdf(pdfFile);
+    if (uploadedUrl) url = uploadedUrl;
+  }
 
   if (!id || !title || !url) return;
   await updateLinkById(id, { title, url, description, slug, category });

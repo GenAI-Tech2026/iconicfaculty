@@ -8,6 +8,16 @@ import { detectPlatform, platformLabel, platformColor, categoryForIcon } from ".
 
 const CATEGORIES = ["Social", "Resources", "Booking", "Content", "Other"];
 
+function pdfFileNameFromUrl(url) {
+  try {
+    const clean = String(url || "").split("?")[0];
+    const last = decodeURIComponent(clean.split("/").pop() || "document.pdf");
+    return last.replace(/^\d+-/, "") || "document.pdf";
+  } catch {
+    return "document.pdf";
+  }
+}
+
 function LinkCard({ link, isFirst, isLast, clickCount }) {
   const [editing, setEditing] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
@@ -37,7 +47,9 @@ function LinkCard({ link, isFirst, isLast, clickCount }) {
               {link.is_active ? "Live" : "Hidden"}
             </span>
           </div>
-          <div className="if-st-card__url">{link.url}</div>
+          <div className="if-st-card__url">
+            {link.icon === "pdf" ? `PDF File: ${pdfFileNameFromUrl(link.url)}` : link.url}
+          </div>
           <div className="if-st-card__meta">
             <button type="button" className="if-st-slug" onClick={copyShort} title="Copy short link">
               /l/{link.slug} {copied ? "✓ Copied" : "⎘"}
@@ -112,15 +124,23 @@ function LinkCard({ link, isFirst, isLast, clickCount }) {
             </label>
           </div>
           <div className="if-st-grid2">
-            <label>
-              <span>Destination URL</span>
-              <input
-                name="url"
-                value={editUrl}
-                onChange={(e) => setEditUrl(e.target.value)}
-                required
-              />
-            </label>
+            {link.icon === "pdf" ? (
+              <label>
+                <span>Replace PDF File (current: {pdfFileNameFromUrl(link.url)})</span>
+                <input type="hidden" name="url" value={link.url} />
+                <input type="file" name="pdfFile" accept="application/pdf,.pdf" />
+              </label>
+            ) : (
+              <label>
+                <span>Destination URL</span>
+                <input
+                  name="url"
+                  value={editUrl}
+                  onChange={(e) => setEditUrl(e.target.value)}
+                  required
+                />
+              </label>
+            )}
             <label>
               <span>Short slug (/l/...)</span>
               <input name="slug" defaultValue={link.slug} />
@@ -150,12 +170,23 @@ function LinkCard({ link, isFirst, isLast, clickCount }) {
 
 export function AdminStudio({ links, events, adminName }) {
   const [view, setView] = React.useState("links");
+  // Box 1: Normal Link form state
   const [newTitle, setNewTitle] = React.useState("");
   const [newUrl, setNewUrl] = React.useState("");
   const [newDesc, setNewDesc] = React.useState("");
   const [newSlug, setNewSlug] = React.useState("");
   const [newCat, setNewCat] = React.useState("");
-  const formRef = React.useRef(null);
+  const linkFormRef = React.useRef(null);
+
+  // Box 2: PDF Upload form state
+  const [pdfTitle, setPdfTitle] = React.useState("");
+  const [pdfDesc, setPdfDesc] = React.useState("");
+  const [pdfSlug, setPdfSlug] = React.useState("");
+  const [pdfCat, setPdfCat] = React.useState("Resources");
+  const [pdfName, setPdfName] = React.useState("");
+  const [pdfUploading, setPdfUploading] = React.useState(false);
+  const [pdfError, setPdfError] = React.useState(null);
+  const pdfFormRef = React.useRef(null);
 
   const detectedIcon = detectPlatform(newUrl);
   const autoCat = newCat || categoryForIcon(detectedIcon);
@@ -235,10 +266,11 @@ export function AdminStudio({ links, events, adminName }) {
 
       {view === "links" ? (
         <div className="if-adm__split">
-          {/* Left: Add + Manage */}
+          {/* Left: Separate Boxes for Links and PDFs */}
           <div className="if-adm__editor">
+            {/* Box 1: Normal Links */}
             <form
-              ref={formRef}
+              ref={linkFormRef}
               action={async (fd) => {
                 await createLink(fd);
                 setNewTitle("");
@@ -246,11 +278,12 @@ export function AdminStudio({ links, events, adminName }) {
                 setNewDesc("");
                 setNewSlug("");
                 setNewCat("");
+                linkFormRef.current?.reset();
               }}
               className="if-st-add"
             >
               <div className="if-st-add__head">
-                <h2>+ Add new link</h2>
+                <h2>+ Add Link</h2>
                 {newUrl && (
                   <span className="if-st-detected">
                     <span className="if-st-detected__dot" style={{ background: platformColor(detectedIcon) }}>
@@ -320,21 +353,160 @@ export function AdminStudio({ links, events, adminName }) {
 
               <div className="if-st-add__foot">
                 <button type="submit" className="if-st-primary">
-                  Add to Linktree
+                  Add Link
                 </button>
               </div>
             </form>
 
-            <div className="if-st-list">
-              {links.map((l, i) => (
-                <LinkCard
-                  key={l.id}
-                  link={l}
-                  isFirst={i === 0}
-                  isLast={i === links.length - 1}
-                  clickCount={clicksByLink[l.id] || 0}
+            {/* Box 2: PDF Uploads */}
+            <form
+              ref={pdfFormRef}
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (pdfUploading) return;
+                setPdfError(null);
+                setPdfUploading(true);
+                try {
+                  await createLink(new FormData(e.currentTarget));
+                  setPdfTitle("");
+                  setPdfDesc("");
+                  setPdfSlug("");
+                  setPdfCat("Resources");
+                  setPdfName("");
+                  pdfFormRef.current?.reset();
+                } catch (ex) {
+                  setPdfError(ex instanceof Error ? ex.message : "PDF upload failed.");
+                } finally {
+                  setPdfUploading(false);
+                }
+              }}
+              className="if-st-add if-st-add--pdf"
+            >
+              <div className="if-st-add__head">
+                <h2>+ Upload PDF</h2>
+                <span className="if-st-detected">
+                  <span className="if-st-detected__dot" style={{ background: platformColor("pdf") }}>
+                    <PlatformIcon icon="pdf" size={12} />
+                  </span>
+                  {pdfName ? pdfName : "Direct PDF file"}
+                </span>
+              </div>
+              {pdfError && (
+                <p style={{ color: "#ff9da5", fontSize: 13, margin: 0 }}>{pdfError}</p>
+              )}
+
+              <div className="if-st-grid2">
+                <label>
+                  <span>PDF Title *</span>
+                  <input
+                    name="title"
+                    placeholder="e.g. IPE Physics Formula Sheet"
+                    value={pdfTitle}
+                    onChange={(e) => setPdfTitle(e.target.value)}
+                    required
+                  />
+                </label>
+                <label>
+                  <span>Category</span>
+                  <select
+                    name="category"
+                    value={pdfCat}
+                    onChange={(e) => setPdfCat(e.target.value)}
+                  >
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className="if-st-grid2">
+                <label>
+                  <span>PDF File *</span>
+                  <input
+                    type="file"
+                    name="pdfFile"
+                    accept="application/pdf,.pdf"
+                    required
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) {
+                        setPdfName(f.name);
+                        if (!pdfTitle) {
+                          setPdfTitle(f.name.replace(/\.pdf$/i, "").replace(/[-_]+/g, " ").trim());
+                        }
+                      } else {
+                        setPdfName("");
+                      }
+                    }}
+                  />
+                </label>
+                <label>
+                  <span>Custom Slug (optional)</span>
+                  <input
+                    name="slug"
+                    autoComplete="off"
+                    placeholder="physics-formula-pdf"
+                    value={pdfSlug}
+                    onChange={(e) => setPdfSlug(e.target.value)}
+                  />
+                </label>
+              </div>
+
+              <label>
+                <span>Short Description (optional)</span>
+                <input
+                  name="description"
+                  placeholder="e.g. Chapter-wise PDF notes for 2nd year"
+                  value={pdfDesc}
+                  onChange={(e) => setPdfDesc(e.target.value)}
                 />
-              ))}
+              </label>
+
+              <div className="if-st-add__foot">
+                <button type="submit" disabled={pdfUploading} className="if-st-primary">
+                  {pdfUploading ? "Publishing…" : "Publish PDF"}
+                </button>
+              </div>
+            </form>
+
+            {/* Managed Lists: Links Box + PDFs Box */}
+            <div className="if-st-group">
+              <div className="if-st-group__head">Links ({links.filter((l) => l.icon !== "pdf").length})</div>
+              <div className="if-st-list">
+                {links
+                  .filter((l) => l.icon !== "pdf")
+                  .map((l, i, arr) => (
+                    <LinkCard
+                      key={l.id}
+                      link={l}
+                      isFirst={i === 0}
+                      isLast={i === arr.length - 1}
+                      clickCount={clicksByLink[l.id] || 0}
+                    />
+                  ))}
+              </div>
+            </div>
+
+            <div className="if-st-group">
+              <div className="if-st-group__head">PDFs ({links.filter((l) => l.icon === "pdf").length})</div>
+              <div className="if-st-list">
+                {links.filter((l) => l.icon === "pdf").length === 0 ? (
+                  <p className="if-an__empty">No PDFs uploaded yet. Use the Upload PDF box above.</p>
+                ) : (
+                  links
+                    .filter((l) => l.icon === "pdf")
+                    .map((l, i, arr) => (
+                      <LinkCard
+                        key={l.id}
+                        link={l}
+                        isFirst={i === 0}
+                        isLast={i === arr.length - 1}
+                        clickCount={clicksByLink[l.id] || 0}
+                      />
+                    ))
+                )}
+              </div>
             </div>
           </div>
 
@@ -360,23 +532,61 @@ export function AdminStudio({ links, events, adminName }) {
                     </div>
                   )}
 
-                  {activeLinks.map((l) => (
-                    <a
-                      key={l.id}
-                      href={l.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="if-phone__card"
-                    >
-                      <span className="if-phone__icon" style={{ background: platformColor(l.icon) }}>
-                        <PlatformIcon icon={l.icon} size={15} url={l.url} />
+                  {activeLinks
+                    .filter((l) => l.icon !== "pdf")
+                    .map((l) => (
+                      <a
+                        key={l.id}
+                        href={l.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="if-phone__card"
+                      >
+                        <span className="if-phone__icon" style={{ background: platformColor(l.icon) }}>
+                          <PlatformIcon icon={l.icon} size={15} url={l.url} />
+                        </span>
+                        <span className="if-phone__text">
+                          <strong>{l.title}</strong>
+                          {l.description && <small>{l.description}</small>}
+                        </span>
+                      </a>
+                    ))}
+
+                  {(pdfTitle || activeLinks.some((l) => l.icon === "pdf")) && (
+                    <div className="if-phone__sec">PDFs &amp; Study Material</div>
+                  )}
+
+                  {pdfTitle && pdfName && (
+                    <div className="if-phone__card is-draft">
+                      <span className="if-phone__icon" style={{ background: platformColor("pdf") }}>
+                        <PlatformIcon icon="pdf" size={15} />
                       </span>
                       <span className="if-phone__text">
-                        <strong>{l.title}</strong>
-                        {l.description && <small>{l.description}</small>}
+                        <strong>{pdfTitle}</strong>
+                        {pdfDesc && <small>{pdfDesc}</small>}
                       </span>
-                    </a>
-                  ))}
+                    </div>
+                  )}
+
+                  {activeLinks
+                    .filter((l) => l.icon === "pdf")
+                    .map((l) => (
+                      <a
+                        key={l.id}
+                        href={l.slug ? `/pdfs/${l.slug}.pdf` : l.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="if-phone__card"
+                      >
+                        <span className="if-phone__icon" style={{ background: platformColor(l.icon) }}>
+                          <PlatformIcon icon={l.icon} size={15} url={l.url} />
+                        </span>
+                        <span className="if-phone__text">
+                          <strong>{l.title}</strong>
+                          {l.description && <small>{l.description}</small>}
+                        </span>
+                      </a>
+                    ))}
                 </div>
               </div>
             </div>
@@ -631,6 +841,25 @@ export function AdminStudio({ links, events, adminName }) {
         .if-st-btn.is-danger:hover {
           background: rgba(230, 57, 70, 0.2);
           border-color: var(--accent);
+        }
+        .if-st-group {
+          margin-top: 22px;
+        }
+        .if-st-group__head {
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 1.4px;
+          text-transform: uppercase;
+          color: var(--accent);
+          margin-bottom: 10px;
+        }
+        .if-phone__sec {
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 1.2px;
+          text-transform: uppercase;
+          color: var(--accent);
+          margin-top: 8px;
         }
         .if-st-list {
           display: flex;

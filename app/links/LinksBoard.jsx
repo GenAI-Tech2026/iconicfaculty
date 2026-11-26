@@ -67,6 +67,49 @@ export function LinksBoard({ links }) {
     });
   }, [links, query, activeCat]);
 
+  const normalLinks = React.useMemo(
+    () => filtered.filter((l) => l.icon !== "pdf"),
+    [filtered],
+  );
+  const pdfLinks = React.useMemo(
+    () => filtered.filter((l) => l.icon === "pdf"),
+    [filtered],
+  );
+
+  const renderCard = (link) => (
+    <a
+      key={link.id}
+      href={link.icon === "pdf" && link.slug ? `/pdfs/${link.slug}.pdf` : link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="if-lp__card"
+      onClick={() =>
+        sendEvent({ type: "click", id: link.id, source: sourceRef.current })
+      }
+    >
+      <span
+        className="if-lp__icon"
+        style={{ background: platformColor(link.icon) }}
+      >
+        <PlatformIcon icon={link.icon} size={22} url={link.url} />
+      </span>
+      <span className="if-lp__meta">
+        <span className="if-lp__card-title">
+          {link.title}
+          {link.icon === "pdf" && <span className="if-lp__pdf-tag">PDF</span>}
+        </span>
+        {link.description && (
+          <span className="if-lp__card-desc">{link.description}</span>
+        )}
+      </span>
+      <span className="if-lp__arrow" aria-hidden="true">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <path d="M4 12L12 4M6 4h6v6" />
+        </svg>
+      </span>
+    </a>
+  );
+
   return (
     <main className="if-lp">
       <div className="if-lp__wrap">
@@ -93,7 +136,7 @@ export function LinksBoard({ links }) {
             </svg>
             <input
               type="search"
-              placeholder="Search links..."
+              placeholder="Search links & PDFs..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               aria-label="Search links"
@@ -128,41 +171,23 @@ export function LinksBoard({ links }) {
           )}
         </div>
 
-        {/* Linktree Stack */}
+        {/* Separate Boxes: Links vs PDFs */}
         {filtered.length === 0 ? (
-          <div className="if-lp__empty">No matching links found.</div>
+          <div className="if-lp__empty">No matching links or PDFs found.</div>
         ) : (
-          <div className="if-lp__list">
-            {filtered.map((link) => (
-              <a
-                key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="if-lp__card"
-                onClick={() =>
-                  sendEvent({ type: "click", id: link.id, source: sourceRef.current })
-                }
-              >
-                <span
-                  className="if-lp__icon"
-                  style={{ background: platformColor(link.icon) }}
-                >
-                  <PlatformIcon icon={link.icon} size={22} url={link.url} />
-                </span>
-                <span className="if-lp__meta">
-                  <span className="if-lp__card-title">{link.title}</span>
-                  {link.description && (
-                    <span className="if-lp__card-desc">{link.description}</span>
-                  )}
-                </span>
-                <span className="if-lp__arrow" aria-hidden="true">
-                  <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8">
-                    <path d="M4 12L12 4M6 4h6v6" />
-                  </svg>
-                </span>
-              </a>
-            ))}
+          <div className="if-lp__sections">
+            {normalLinks.length > 0 && (
+              <div className="if-lp__box">
+                <div className="if-lp__box-head">Links</div>
+                <div className="if-lp__list">{normalLinks.map(renderCard)}</div>
+              </div>
+            )}
+            {pdfLinks.length > 0 && (
+              <div className="if-lp__box">
+                <div className="if-lp__box-head">PDFs &amp; Study Material</div>
+                <div className="if-lp__list">{pdfLinks.map(renderCard)}</div>
+              </div>
+            )}
           </div>
         )}
 
@@ -290,6 +315,26 @@ export function LinksBoard({ links }) {
           color: #fff;
           box-shadow: 0 4px 16px rgba(230, 57, 70, 0.35);
         }
+        .if-lp__sections {
+          display: flex;
+          flex-direction: column;
+          gap: 22px;
+        }
+        .if-lp__box {
+          background: rgba(255, 255, 255, 0.025);
+          border: 1px solid var(--glass-border);
+          border-radius: 20px;
+          padding: 16px;
+        }
+        .if-lp__box-head {
+          font-size: 11.5px;
+          font-weight: 800;
+          letter-spacing: 1.8px;
+          text-transform: uppercase;
+          color: var(--accent);
+          margin-bottom: 12px;
+          padding-left: 4px;
+        }
         .if-lp__list {
           display: flex;
           flex-direction: column;
@@ -334,6 +379,20 @@ export function LinksBoard({ links }) {
           font-weight: 600;
           font-size: 15.5px;
           color: #fff;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+        .if-lp__pdf-tag {
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.8px;
+          padding: 2px 7px;
+          border-radius: 6px;
+          background: rgba(220, 38, 38, 0.25);
+          border: 1px solid rgba(220, 38, 38, 0.55);
+          color: #fca5a5;
         }
         .if-lp__card-desc {
           font-size: 13px;

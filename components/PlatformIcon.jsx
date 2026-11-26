@@ -65,6 +65,14 @@ export function PlatformIcon({ icon, size = 20, url }) {
           <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
         </svg>
       );
+    case "pdf":
+      return (
+        <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <path d="M9 15h6M9 11h3" />
+        </svg>
+      );
     default:
       if (url) {
         try {

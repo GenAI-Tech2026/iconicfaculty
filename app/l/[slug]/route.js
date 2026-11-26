@@ -18,5 +18,6 @@ export async function GET(req, context) {
   const device = deviceFromUA(req.headers.get("user-agent") || "");
   await recordEvent({ type: "click", link_id: link.id, source: "Shortlink", device });
 
-  return NextResponse.redirect(link.url, 307);
+  const target = link.icon === "pdf" ? new URL(`/pdfs/${link.slug}.pdf`, req.url) : link.url;
+  return NextResponse.redirect(target, 307);
 }
